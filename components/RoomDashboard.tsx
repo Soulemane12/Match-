@@ -126,7 +126,11 @@ export function RoomDashboard({ roomId }: { roomId: string }) {
   }
 
   const participants = room?.participants ?? [];
-  const canRun = participants.length === 2 && !isRunning;
+  const canRun =
+    participants.length === 2 &&
+    participants[0] != null &&
+    participants[1] != null &&
+    !isRunning;
 
   if (storageError) {
     return (
@@ -226,8 +230,10 @@ export function RoomDashboard({ roomId }: { roomId: string }) {
                 <div>
                   <p className="font-medium text-white">Step 3 · Run Collision</p>
                   <p className="mt-1 text-sm text-zinc-500">
-                    {participants.length < 2
-                      ? `Waiting for ${2 - participants.length} more participant${participants.length === 1 ? "" : "s"}`
+                    {!canRun && !isRunning
+                      ? participants.filter(Boolean).length < 2
+                        ? `Waiting for ${2 - participants.filter(Boolean).length} more participant${participants.filter(Boolean).length === 1 ? "" : "s"}`
+                        : "Waiting for participants..."
                       : "Both participants ready"}
                   </p>
                 </div>

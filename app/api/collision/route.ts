@@ -158,9 +158,9 @@ export async function POST(request: NextRequest) {
 
   const participants = body.participants.slice(0, 2) as Participant[];
 
-  if (participants.length < 2) {
+  if (participants.length < 2 || !participants[0]?.name || !participants[1]?.name) {
     return NextResponse.json(
-      { error: "Two participants are required" },
+      { error: "Two complete participant profiles are required" },
       { status: 400 },
     );
   }
