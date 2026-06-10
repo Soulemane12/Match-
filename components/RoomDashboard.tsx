@@ -73,6 +73,9 @@ export function RoomDashboard({ roomId }: { roomId: string }) {
     return `${origin}/join/${roomId}`;
   }, [origin, roomId]);
 
+  const joinUrlA = joinUrl ? `${joinUrl}?slot=A` : "";
+  const joinUrlB = joinUrl ? `${joinUrl}?slot=B` : "";
+
   function handleNewRoom() {
     const nextRoom = resetRoom();
     window.location.href = `/room/${nextRoom.roomId}`;
@@ -181,17 +184,25 @@ export function RoomDashboard({ roomId }: { roomId: string }) {
               </div>
             </div>
 
-            {joinUrl ? (
+            {joinUrlA ? (
               <div className="rounded-lg border border-white/10 bg-white/[0.035] p-5">
                 <p className="text-sm font-medium uppercase tracking-[0.22em] text-zinc-500">
                   Step 1 · Invite participants
                 </p>
                 <p className="mt-3 text-sm text-zinc-400">
-                  Share this link so both participants can join and enter their profiles.
+                  Send each person their own link — they go to separate slots.
                 </p>
-                <div className="mt-4 flex items-center gap-3 rounded-md border border-white/10 bg-black/30 px-4 py-3">
-                  <p className="flex-1 truncate font-mono text-xs text-cyan-200">{joinUrl}</p>
-                  <CopyButton value={joinUrl} label="Copy" />
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center gap-3 rounded-md border border-white/10 bg-black/30 px-4 py-3">
+                    <p className="w-16 shrink-0 text-xs font-semibold text-cyan-300">User A</p>
+                    <p className="flex-1 truncate font-mono text-xs text-cyan-200">{joinUrlA}</p>
+                    <CopyButton value={joinUrlA} label="Copy" />
+                  </div>
+                  <div className="flex items-center gap-3 rounded-md border border-white/10 bg-black/30 px-4 py-3">
+                    <p className="w-16 shrink-0 text-xs font-semibold text-fuchsia-300">User B</p>
+                    <p className="flex-1 truncate font-mono text-xs text-fuchsia-200">{joinUrlB}</p>
+                    <CopyButton value={joinUrlB} label="Copy" />
+                  </div>
                 </div>
               </div>
             ) : (
@@ -205,8 +216,8 @@ export function RoomDashboard({ roomId }: { roomId: string }) {
                 Step 2 · Participants
               </p>
               <div className="grid gap-5 lg:grid-cols-2">
-                <ParticipantCard label="User A" participant={participants[0]} joinUrl={joinUrl} />
-                <ParticipantCard label="User B" participant={participants[1]} joinUrl={joinUrl} />
+                <ParticipantCard label="User A" participant={participants[0]} joinUrl={joinUrlA} />
+                <ParticipantCard label="User B" participant={participants[1]} joinUrl={joinUrlB} />
               </div>
             </section>
 
