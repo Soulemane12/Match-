@@ -9,19 +9,8 @@ type LinkedInUserInfo = {
   email?: string;
 };
 
-type LinkedInV2Me = {
-  headline?: { localized?: Record<string, string> };
-  summary?: { localized?: Record<string, string> };
-};
-
-function getFirstLocalized(field?: { localized?: Record<string, string> }): string {
-  if (!field?.localized) return "";
-  return Object.values(field.localized)[0] ?? "";
-}
-
 const tokenUrl = "https://www.linkedin.com/oauth/v2/accessToken";
 const userInfoUrl = "https://api.linkedin.com/v2/userinfo";
-const v2MeUrl = "https://api.linkedin.com/v2/me?projection=(id,headline,summary)";
 
 function getRedirectUri(request: NextRequest) {
   return (
@@ -126,29 +115,13 @@ export async function GET(request: NextRequest) {
       [profile.given_name, profile.family_name].filter(Boolean).join(" ") ??
       "";
 
-    let headline = "";
-    let summary = "";
-    try {
-      const meResponse = await fetch(v2MeUrl, {
-        headers: { Authorization: `Bearer ${token.access_token}` },
-        cache: "no-store",
-      });
-      if (meResponse.ok) {
-        const me = (await meResponse.json()) as LinkedInV2Me;
-        headline = getFirstLocalized(me.headline);
-        summary = getFirstLocalized(me.summary);
-      }
-    } catch {
-      // headline/summary stay empty — OIDC data is still used
-    }
-
     const participantProfile = {
       name: displayName,
       linkedinUrl: profile.sub
         ? `https://www.linkedin.com/in/${profile.sub}`
         : "https://www.linkedin.com/",
-      headline,
-      summary,
+      headline: "",
+      summary: "",
       skills: "",
       goals: "",
       imageUrl: profile.picture ?? "",

@@ -31,7 +31,7 @@ export function GET(request: NextRequest) {
   authorizeUrl.searchParams.set("client_id", clientId);
   authorizeUrl.searchParams.set("redirect_uri", getRedirectUri(request));
   authorizeUrl.searchParams.set("state", state);
-  authorizeUrl.searchParams.set("scope", "openid profile email r_liteprofile");
+  authorizeUrl.searchParams.set("scope", "openid profile email");
 
   const response = NextResponse.redirect(authorizeUrl);
   response.cookies.set("matchmode_linkedin_state", `${state}:${roomId}:${slot}`, {
