@@ -176,7 +176,9 @@ export async function POST(request: NextRequest) {
 
   const model = process.env.OPENAI_MODEL ?? "gpt-5.4-nano";
 
-  const finalJson = await createOpenAIResponse({
+  let finalJson: string;
+  try {
+    finalJson = await createOpenAIResponse({
     apiKey,
     model,
     json: true,
@@ -210,11 +212,19 @@ Instructions:
 - Different modes must produce meaningfully different verdicts for the same pair.
 - For Roommate mode, flag that professional data is a weak signal for lifestyle fit.
 - Include a concrete role split, a suggested first message, and actionable next steps.`,
-  });
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "OpenAI request failed";
+    return NextResponse.json({ error: message }, { status: 502 });
+  }
 
-  return NextResponse.json({
-    result: JSON.parse(finalJson) as CollisionResult,
-    provider: "openai",
-    model,
-  });
+  try {
+    return NextResponse.json({
+      result: JSON.parse(finalJson) as CollisionResult,
+      provider: "openai",
+      model,
+    });
+  } catch {
+    return NextResponse.json({ error: "OpenAI returned invalid JSON" }, { status: 502 });
+  }
 }

@@ -1,5 +1,4 @@
 import type { Participant } from "../lib/storage";
-import Image from "next/image";
 
 function initials(name: string) {
   return name
@@ -45,12 +44,11 @@ export function ParticipantCard({
           <div>
             {qrUrl ? (
               <div className="mx-auto rounded-lg border border-white/10 bg-white p-3">
-                <Image
+                <img
                   src={qrUrl}
                   alt={`QR code for ${label} LinkedIn login`}
                   width={168}
                   height={168}
-                  unoptimized
                 />
               </div>
             ) : (
