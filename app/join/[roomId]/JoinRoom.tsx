@@ -22,60 +22,6 @@ const emptyForm: ProfileForm = {
   imageUrl: "",
 };
 
-const sampleProfiles: { label: string; profile: ProfileForm }[] = [
-  {
-    label: "Use Builder Profile",
-    profile: {
-      name: "Avery Stone",
-      linkedinUrl: "https://linkedin.com/in/avery-stone-ai-builder",
-      headline: "Full-stack AI builder · Next.js, TypeScript, OpenAI",
-      summary:
-        "I build fast AI product prototypes, backend workflows, maps, and launchable MVPs for hackathons and early product tests.",
-      skills: "Next.js, TypeScript, OpenAI, backend, maps, hackathons",
-      goals: "ship an MVP quickly, validate a product, win a demo",
-      imageUrl: "",
-    },
-  },
-  {
-    label: "Use Designer Profile",
-    profile: {
-      name: "Maya Chen",
-      linkedinUrl: "https://linkedin.com/in/maya-chen-product-design",
-      headline: "Product designer / strategist · Figma, UX, brand",
-      summary:
-        "I turn rough ideas into clear flows, polished interfaces, pitch decks, user research insights, and strong product narratives.",
-      skills: "Figma, UX, branding, pitch decks, user research",
-      goals: "make products polished, explainable, and easy to demo",
-      imageUrl: "",
-    },
-  },
-  {
-    label: "Use Business Profile",
-    profile: {
-      name: "Taylor Brooks",
-      linkedinUrl: "https://linkedin.com/in/taylor-brooks-growth",
-      headline: "Business operator · GTM, partnerships, customer discovery",
-      summary:
-        "I focus on market validation, customer conversations, partnerships, pitch structure, and finding the commercial angle.",
-      skills: "GTM, partnerships, customer discovery, sales, pitch strategy",
-      goals: "find a viable wedge, build traction, make the ask credible",
-      imageUrl: "",
-    },
-  },
-  {
-    label: "Use Student Profile",
-    profile: {
-      name: "Jordan Rivera",
-      linkedinUrl: "https://linkedin.com/in/jordan-rivera-student",
-      headline: "Student · research, clubs, study systems",
-      summary:
-        "I balance classes, club projects, research, and structured study sessions. I like clear expectations and reliable teammates.",
-      skills: "research, study planning, club leadership, writing, teamwork",
-      goals: "learn faster, contribute to a team, build portfolio projects",
-      imageUrl: "",
-    },
-  },
-];
 
 function decodeLinkedInProfile(value?: string): ProfileForm | null {
   if (!value) {
@@ -272,22 +218,6 @@ export function JoinRoom({
                   Add profile details
                 </h2>
               </div>
-            </div>
-
-            <div className="mt-5 grid gap-2 sm:grid-cols-2">
-              {sampleProfiles.map((sample) => (
-                <button
-                  key={sample.label}
-                  type="button"
-                  onClick={() => {
-                    setForm(sample.profile);
-                    setMessage("");
-                  }}
-                  className="rounded-md border border-white/10 bg-black/20 px-3 py-3 text-left text-sm font-medium text-zinc-200 transition hover:border-cyan-300/40 hover:bg-cyan-300/10"
-                >
-                  {sample.label}
-                </button>
-              ))}
             </div>
 
             <div className="mt-5 space-y-4">

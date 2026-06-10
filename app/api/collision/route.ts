@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateCollisionResult, type CollisionResult } from "../../../lib/mockCollision";
+import type { CollisionResult } from "../../../lib/mockCollision";
 import { MATCH_MODES, type MatchMode, type Participant } from "../../../lib/storage";
 
 const responsesUrl = "https://api.openai.com/v1/responses";
@@ -165,24 +165,22 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const fallback = generateCollisionResult({
-    mode: body.mode,
-    participants: [participants[0], participants[1]],
-  });
   const apiKey = process.env.OPENAI_API_KEY;
 
   if (!apiKey) {
-    return NextResponse.json({ result: fallback, provider: "mock" });
+    return NextResponse.json(
+      { error: "OpenAI API key is not configured. Add OPENAI_API_KEY to your environment." },
+      { status: 503 },
+    );
   }
 
   const model = process.env.OPENAI_MODEL ?? "gpt-5.4-nano";
 
-  try {
-    const finalJson = await createOpenAIResponse({
-      apiKey,
-      model,
-      json: true,
-      input: `You are MatchMode AI. Simulate User A Agent, User B Agent, Risk Agent, and Judge Agent interacting, then produce a structured verdict for whether these two LinkedIn-style profiles are a good match for the selected relationship mode.
+  const finalJson = await createOpenAIResponse({
+    apiKey,
+    model,
+    json: true,
+    input: `You are MatchMode AI. Simulate User A Agent, User B Agent, Risk Agent, and Judge Agent interacting, then produce a structured verdict for whether these two LinkedIn-style profiles are a good match for the selected relationship mode.
 
 Mode: ${body.mode}
 User A: ${JSON.stringify(participants[0])}
@@ -196,14 +194,11 @@ Rules:
 - matchScore must be 0 to 100.
 - agentDebate must include User A Agent, User B Agent, Judge Agent, and Risk Agent.
 - Include practical role split/rules, first message, and next steps.`,
-    });
+  });
 
-    return NextResponse.json({
-      result: JSON.parse(finalJson) as CollisionResult,
-      provider: "openai",
-      model,
-    });
-  } catch {
-    return NextResponse.json({ result: fallback, provider: "mock_fallback" });
-  }
+  return NextResponse.json({
+    result: JSON.parse(finalJson) as CollisionResult,
+    provider: "openai",
+    model,
+  });
 }
