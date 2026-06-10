@@ -19,6 +19,7 @@ function splitList(value: string) {
     .slice(0, 6);
 }
 
+
 export function ParticipantCard({
   label,
   participant,
