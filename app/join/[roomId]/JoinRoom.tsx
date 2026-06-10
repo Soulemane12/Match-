@@ -67,6 +67,7 @@ export function JoinRoom({
         const nextRoom = setParticipantSlot(roomId, slot === "B" ? 1 : 0, profile);
         setRoom(nextRoom);
         setJoined(true);
+        window.history.replaceState({}, "", `/join/${roomId}?slot=${slot}`);
         return;
       }
 

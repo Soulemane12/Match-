@@ -180,20 +180,36 @@ export async function POST(request: NextRequest) {
     apiKey,
     model,
     json: true,
-    input: `You are MatchMode AI. Simulate User A Agent, User B Agent, Risk Agent, and Judge Agent interacting, then produce a structured verdict for whether these two LinkedIn-style profiles are a good match for the selected relationship mode.
+    input: `You are MatchMode AI. You receive two real LinkedIn profiles and a relationship mode. Your job is to simulate four agents debating the match and produce a structured verdict.
 
 Mode: ${body.mode}
-User A: ${JSON.stringify(participants[0])}
-User B: ${JSON.stringify(participants[1])}
 
-Rules:
-- Return only the JSON object matching the schema.
-- The same two users must get different verdicts for different modes.
-- Be concrete, not generic.
-- For Roommate mode, explicitly warn that LinkedIn data is not enough and lifestyle data is needed.
-- matchScore must be 0 to 100.
-- agentDebate must include User A Agent, User B Agent, Judge Agent, and Risk Agent.
-- Include practical role split/rules, first message, and next steps.`,
+User A LinkedIn Profile:
+- Name: ${participants[0].name}
+- Headline: ${participants[0].headline || "not provided"}
+- Summary/Bio: ${participants[0].summary || "not provided"}
+- Skills: ${participants[0].skills || "not provided"}
+- Goals: ${participants[0].goals || "not provided"}
+- LinkedIn: ${participants[0].linkedinUrl}
+
+User B LinkedIn Profile:
+- Name: ${participants[1].name}
+- Headline: ${participants[1].headline || "not provided"}
+- Summary/Bio: ${participants[1].summary || "not provided"}
+- Skills: ${participants[1].skills || "not provided"}
+- Goals: ${participants[1].goals || "not provided"}
+- LinkedIn: ${participants[1].linkedinUrl}
+
+Instructions:
+- Each agent must reason from the actual profile data above — do not invent facts, but do infer likely skills, experience level, and working style from the headline and summary.
+- User A Agent argues from User A's perspective and interests.
+- User B Agent argues from User B's perspective and interests.
+- Risk Agent identifies real friction points based on the profiles.
+- Judge Agent gives a final verdict with a concrete matchScore 0-100.
+- Be specific to these two people — no generic responses.
+- Different modes must produce meaningfully different verdicts for the same pair.
+- For Roommate mode, flag that professional data is a weak signal for lifestyle fit.
+- Include a concrete role split, a suggested first message, and actionable next steps.`,
   });
 
   return NextResponse.json({
