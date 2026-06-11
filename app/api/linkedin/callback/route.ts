@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { upsertParticipantSlot } from "../../../../lib/kv";
 
 type LinkedInUserInfo = {
   sub?: string;
@@ -115,7 +116,8 @@ export async function GET(request: NextRequest) {
       [profile.given_name, profile.family_name].filter(Boolean).join(" ") ??
       "";
 
-    const participantProfile = {
+    const participant = {
+      id: profile.sub ?? `participant-${Date.now()}-${Math.random().toString(16).slice(2)}`,
       name: displayName,
       linkedinUrl: profile.sub
         ? `https://www.linkedin.com/in/${profile.sub}`
@@ -125,9 +127,13 @@ export async function GET(request: NextRequest) {
       skills: "",
       goals: "",
       imageUrl: profile.picture ?? "",
+      joinedAt: new Date().toISOString(),
     };
+
+    await upsertParticipantSlot(roomId, slot === "B" ? 1 : 0, participant);
+
     const encodedProfile = Buffer.from(
-      JSON.stringify(participantProfile),
+      JSON.stringify(participant),
       "utf8",
     ).toString("base64url");
 

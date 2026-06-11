@@ -47,22 +47,40 @@ export function RoomDashboard({ roomId }: { roomId: string }) {
   }, [roomId]);
 
   useEffect(() => {
-    const syncRoom = () => {
+    let active = true;
+
+    async function syncRoom() {
       try {
-        if (isLocalStorageAvailable()) {
-          setRoom(getRoom(roomId));
+        const res = await fetch(`/api/room/${roomId}`, { cache: "no-store" });
+        if (!active) return;
+        if (res.ok) {
+          const { room: serverRoom } = (await res.json()) as { room: Room | null };
+          if (serverRoom?.participants) {
+            setRoom((prev) => {
+              if (!prev) return prev;
+              const merged = [0, 1].map((i) =>
+                serverRoom.participants[i] ?? prev.participants[i] ?? null,
+              ).filter(Boolean) as Room["participants"];
+              return { ...prev, participants: merged };
+            });
+            return;
+          }
         }
-      } catch {
-        setStorageError("localStorage is unavailable.");
+      } catch { /* fall through to localStorage */ }
+
+      if (active && isLocalStorageAvailable()) {
+        setRoom(getRoom(roomId));
       }
-    };
-    const interval = window.setInterval(syncRoom, 1000);
-    window.addEventListener("storage", syncRoom);
+    }
+
+    const interval = window.setInterval(syncRoom, 2000);
     window.addEventListener("matchmode-storage", syncRoom);
     window.addEventListener("focus", syncRoom);
+    syncRoom();
+
     return () => {
+      active = false;
       window.clearInterval(interval);
-      window.removeEventListener("storage", syncRoom);
       window.removeEventListener("matchmode-storage", syncRoom);
       window.removeEventListener("focus", syncRoom);
     };
